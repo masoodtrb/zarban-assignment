@@ -1,35 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from "react";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+type Task = {
+  id: number;
+  title: string;
+  completed: boolean;
+};
+
+const App: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/todos")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+        return response.json();
+      })
+      .then((data: Task[]) => {
+        setTasks(data);
+        setFilteredTasks(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    let filtered = tasks;
+    if (statusFilter !== "all") {
+      const isCompleted = statusFilter === "completed";
+      filtered = filtered.filter((task) => task.completed === isCompleted);
+    }
+    if (searchQuery) {
+      filtered = filtered.filter((task) =>
+        task.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    setFilteredTasks(filtered);
+  }, [statusFilter, searchQuery, tasks]);
+
+  if (loading) return <p>Loading tasks...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app-container">
+      <h1>Task List</h1>
+      <div className="controls">
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <select onChange={(e) => setStatusFilter(e.target.value)} value={statusFilter}>
+          <option value="all">All</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+        </select>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <ul className="task-list">
+        {filteredTasks.map((task) => (
+          <li key={task.id} className={task.completed ? "completed" : "pending"}>
+            {task.title} - {task.completed ? "✔ Completed" : "❌ Pending"}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
-export default App
+export default App;
