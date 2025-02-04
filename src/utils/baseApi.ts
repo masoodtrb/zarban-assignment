@@ -1,4 +1,4 @@
-import { HttpException, HttpExceptionOptions } from './exeptions/httpException';
+import { HttpException, HttpExceptionOptions } from './exceptions/httpException';
 import mapObjectValues from './mapObjectValues';
 
 export const baseApi = 'https://jsonplaceholder.typicode.com';

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import './App.css';
+import './styles/App.css';
 import { useMethods } from './utils/hooks/useMethod';
 import { useQuery } from './utils/hooks/useQuery';
 import { useInterceptedRequest } from './utils/baseApi';
@@ -54,7 +54,7 @@ const App: React.FC = () => {
   );
   const memoryReq = useInterceptedRequest();
 
-  const { data, err, loading } = useQuery<Task[], 'GET'>(memoryReq, '/todosasdasd', {
+  const { data, err, loading } = useQuery<Task[], 'GET'>(memoryReq, '/todos', {
     method: 'GET',
   }, [counter]);
 

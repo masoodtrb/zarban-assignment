@@ -2,7 +2,7 @@ import { DependencyList, useEffect } from 'react';
 import { useAsyncEffect } from './useAsyncEffect';
 import { useMethods } from './useMethod';
 import { RequestConfig, FetchResponseType } from '../baseApi';
-import { HttpException } from '../exeptions/httpException';
+import { HttpException } from '../exceptions/httpException';
 
 export interface QueryLoading<T> {
   loading: true;
